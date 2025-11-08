@@ -49,3 +49,25 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Your_password123
+
+      # --- NUEVO SERVICIO DE USUARIOS ---
+  usuarioapi:
+    image: ${DOCKER_REGISTRY-}usuariosapi
+    build:
+      context: .
+      dockerfile: UsuarioAPI/Dockerfile
+    ports:
+      - "8004:8080" # Puerto público único para este servicio
+    depends_on:
+      - usuariosdb # Depende de la nueva base de datos
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=usuariosdb;Database=UsuariosDB;User=sa;Password=Your_password123;TrustServerCertificate=True
+
+       # --- NUEVA BASE DE DATOS DE USUARIOS ---
+  usuariosdb:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "1436:1433" # Puerto único en el host (1434 y 1435 ya están en uso)
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_password123
